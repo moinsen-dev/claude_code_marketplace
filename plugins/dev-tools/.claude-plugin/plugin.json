@@ -1,0 +1,13 @@
+{
+  "name": "dev-tools",
+  "version": "1.0.0",
+  "description": "Essential development tools and utilities for common coding tasks",
+  "author": {
+    "name": "Udi Moinsen",
+    "email": "[email protected]"
+  },
+  "homepage": "https://github.com/moinsen-dev/claude_code_marketplace",
+  "license": "MIT",
+  "keywords": ["development", "tools", "utilities", "productivity"],
+  "category": "development"
+}

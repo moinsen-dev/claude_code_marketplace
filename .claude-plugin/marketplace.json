@@ -1,0 +1,49 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "moinsen-claude-code-marketplace",
+  "version": "1.2.0",
+  "owner": {
+    "name": "Ulrich Diedrichsen",
+    "url": "https://github.com/moinsen-dev"
+  },
+  "metadata": {
+    "description": "Custom Claude Code plugin marketplace with specialized tools and workflows",
+    "version": "1.1.0",
+    "homepage": "https://github.com/moinsen-dev/claude_code_marketplace"
+  },
+  "plugins": [
+    {
+      "name": "dev-tools",
+      "source": "./plugins/dev-tools",
+      "description": "Essential development tools and utilities for common coding tasks",
+      "version": "1.0.0",
+      "author": {
+        "name": "Ulrich Diedrichsen",
+        "email": "[email protected]"
+      },
+      "keywords": ["development", "tools", "utilities", "productivity"],
+      "category": "development"
+    },
+    {
+      "name": "openspec",
+      "source": "./plugins/openspec",
+      "description": "Spec-driven development plugin for breaking down PRDs into actionable specifications and tasks using OpenSpec and spec-kit",
+      "version": "1.2.0",
+      "author": {
+        "name": "Ulrich Diedrichsen",
+        "email": "[email protected]"
+      },
+      "keywords": [
+        "spec-driven",
+        "prd",
+        "requirements",
+        "specifications",
+        "openspec",
+        "spec-kit",
+        "planning",
+        "project-management"
+      ],
+      "category": "development"
+    }
+  ]
+}

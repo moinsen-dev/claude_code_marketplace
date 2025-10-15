@@ -1,0 +1,244 @@
+# Claude Code Marketplace
+
+> Custom plugin marketplace for Claude Code with specialized development tools, commands, agents, and workflows
+
+## Overview
+
+A production-ready marketplace for Claude Code plugins that provides:
+- Custom slash commands for common development tasks
+- Specialized AI agents for code generation and analysis
+- MCP server integrations (sequential-thinking, package-hero)
+- Complete documentation and contribution guidelines
+
+## Quick Start
+
+### Installation
+```bash
+# Add marketplace
+/plugin marketplace add moinsen-dev/claude_code_marketplace
+
+# Install plugins
+/plugin install dev-tools@claude-code-marketplace
+```
+
+### Usage
+```bash
+/code-review     # Comprehensive code review
+/refactor        # Intelligent refactoring
+/debug           # Systematic debugging
+/social-media    # Generate social media posts
+```
+
+## Project Structure
+
+```
+claude_code_marketplace/
+├── .claude-plugin/
+│   └── marketplace.json      # Marketplace configuration
+├── plugins/
+│   └── dev-tools/            # Example plugin
+│       ├── .claude-plugin/
+│       │   └── plugin.json   # Plugin metadata
+│       ├── commands/         # Slash commands
+│       │   ├── code-review.md
+│       │   ├── refactor.md
+│       │   ├── debug.md
+│       │   └── social-media.md
+│       └── agents/           # AI agents
+│           └── test-generator.md
+├── .mcp.json                 # MCP server configuration
+└── docs/                     # Documentation
+```
+
+## Available Plugins
+
+### Dev Tools Plugin (v1.0.0)
+Essential development tools and utilities for common coding tasks.
+
+**Commands:**
+- `/code-review` - Comprehensive code review with quality, security, and best practices analysis
+- `/refactor` - Intelligent code refactoring while preserving functionality
+- `/debug` - Systematic debugging assistance to identify and fix bugs
+- `/social-media` - Generate professional social media posts for your project (supports `--platform` and `--language` options)
+
+**Agents:**
+- `test-generator` - Expert test engineer for generating comprehensive test suites
+
+## Plugin Development
+
+### Creating a Plugin
+
+1. **Structure:**
+```
+plugins/my-plugin/
+├── .claude-plugin/
+│   └── plugin.json
+├── commands/
+│   └── my-command.md
+└── agents/
+    └── my-agent.md
+```
+
+2. **Command Format:**
+```markdown
+---
+description: Brief description
+allowed-tools: Read, Write, Edit
+argument-hint: [optional args]
+---
+
+# Command Name
+Command instructions here...
+```
+
+3. **Agent Format:**
+```markdown
+---
+name: agent-name
+description: When to invoke this agent
+tools: Read, Write, Grep
+model: inherit
+---
+
+# Agent Name
+Agent system prompt here...
+```
+
+4. **Register in Marketplace:**
+Update `.claude-plugin/marketplace.json` to include your plugin.
+
+## MCP Servers
+
+This marketplace includes two MCP servers:
+
+- **sequential-thinking**: Advanced reasoning with chain-of-thought capabilities
+- **package-hero**: Package version management and quality ratings for Python, JavaScript, and Dart
+
+## Documentation
+
+### Core Documentation
+- [README.md](README.md) - Complete project overview, installation, and usage
+- [QUICK_START.md](QUICK_START.md) - Quick reference for common tasks
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Detailed plugin development guide
+
+### Guides
+- **Installation**: How to add and use the marketplace
+- **Plugin Creation**: Step-by-step plugin development
+- **Command Writing**: Best practices for slash commands
+- **Agent Development**: Creating specialized AI agents
+- **Testing**: Local testing and validation
+
+## Key Features
+
+### Marketplace Features
+- ✅ Compliant with Claude Code plugin specification
+- ✅ Semantic versioning
+- ✅ Plugin categories and tags
+- ✅ GitHub-ready for distribution
+- ✅ Complete documentation
+
+### Plugin Components
+- ✅ YAML frontmatter for configuration
+- ✅ Tool access control
+- ✅ Argument hints
+- ✅ Model selection
+- ✅ Proper namespacing
+
+## API Reference
+
+### Marketplace JSON Structure
+```json
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "marketplace-name",
+  "version": "1.0.0",
+  "owner": {
+    "name": "Owner Name",
+    "url": "https://github.com/owner"
+  },
+  "plugins": [
+    {
+      "name": "plugin-name",
+      "source": "./plugins/plugin-name",
+      "description": "Plugin description",
+      "version": "1.0.0"
+    }
+  ]
+}
+```
+
+### Plugin Manifest
+```json
+{
+  "name": "plugin-name",
+  "version": "1.0.0",
+  "description": "Plugin description",
+  "author": {
+    "name": "Author Name",
+    "email": "[email protected]"
+  },
+  "keywords": ["keyword1", "keyword2"],
+  "category": "development"
+}
+```
+
+## Examples
+
+### Example Command
+```markdown
+---
+description: Analyze code quality
+allowed-tools: Read, Grep, Glob
+---
+
+You are a code quality analyzer. Review the code for:
+- Code smells
+- Best practices violations
+- Security issues
+```
+
+### Example Agent
+```markdown
+---
+name: security-auditor
+description: Security expert for vulnerability analysis
+tools: Read, Grep, Glob, Bash
+model: inherit
+---
+
+You are a security expert specializing in:
+- OWASP Top 10 vulnerabilities
+- Secure coding practices
+- Authentication/authorization
+```
+
+## Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- Plugin creation guidelines
+- Code quality standards
+- Submission process
+- Best practices
+
+## Resources
+
+- **Claude Code Docs**: https://docs.claude.com/claude-code
+- **Plugin Guide**: https://docs.claude.com/en/docs/claude-code/plugins
+- **MCP Protocol**: https://modelcontextprotocol.io
+- **GitHub Repository**: https://github.com/moinsen-dev/claude_code_marketplace
+
+## Support
+
+- Open an issue on GitHub
+- Check existing documentation
+- Review example plugins in the repository
+
+## License
+
+MIT License - See [LICENSE](LICENSE) file
+
+---
+
+Generated: 2025-10-10
+Version: 1.0.0
+Built with Claude Code + Package Hero MCP

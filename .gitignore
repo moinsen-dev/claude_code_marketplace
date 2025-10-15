@@ -1,0 +1,56 @@
+# Claude Code local settings
+.claude/settings.local.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Node modules (if any plugins use npm)
+node_modules/
+package-lock.json
+
+# Python (if any plugins use Python)
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+
+# Build artifacts
+dist/
+build/
+*.bundle.js
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Plugin development
+*.test.md
+.test/
+
+# Examples and demos
+example/
+.conductor/

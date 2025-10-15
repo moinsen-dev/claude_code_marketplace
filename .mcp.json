@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "package-hero": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/moinsen-dev/mcp-package-hero.git",
+        "mcp-package-hero"
+      ]
+    }
+  }
+}
