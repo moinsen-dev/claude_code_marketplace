@@ -1,0 +1,27 @@
+{
+  "default": 1000,
+  "block_todos": true,
+  "todo_patterns": ["TODO", "FIXME", "HACK", "XXX", "TEMP", "TMP"],
+  "extensions": {
+    ".md": 5000,
+    ".json": 2000,
+    ".txt": 5000,
+    ".dart": 800,
+    ".py": 800,
+    ".ts": 800,
+    ".js": 800,
+    ".tsx": 600,
+    ".jsx": 600,
+    ".vue": 600,
+    ".java": 1000,
+    ".go": 1000,
+    ".rs": 1000,
+    ".cpp": 1000,
+    ".c": 1000,
+    ".cs": 1000,
+    ".php": 800,
+    ".rb": 800,
+    ".swift": 800,
+    ".kt": 800
+  }
+}

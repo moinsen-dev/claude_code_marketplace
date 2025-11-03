@@ -2,6 +2,46 @@
 
 A custom marketplace for Claude Code plugins, providing specialized tools and workflows to enhance your development experience.
 
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Why Use This Marketplace?](#why-use-this-marketplace)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Available Plugins](#available-plugins)
+  - [🛠️ Dev Tools](#️-dev-tools)
+  - [🛡️ File Guardian](#️-file-guardian)
+  - [📏 Code Quality Guardian](#-code-quality-guardian)
+- [How the Guardian Plugins Work](#how-the-guardian-plugins-work)
+- [Creating Your Own Plugins](#creating-your-own-plugins)
+- [Development](#development)
+
+## Overview
+
+This marketplace focuses on **quality and safety** through intelligent automation:
+
+- 🛠️ **Dev Tools** - Essential development utilities (code review, refactoring, debugging, social media)
+- 🛡️ **File Guardian** - Protect sensitive files and prevent unwanted markdown summaries
+- 📏 **Code Quality Guardian** - Enforce architectural best practices and prevent bloated code
+
+**Philosophy:** Prevention over correction. Use hooks to stop problems before they happen, not after.
+
+## Why Use This Marketplace?
+
+### Without These Plugins:
+- ❌ Claude might accidentally edit `.env` or `package-lock.json`
+- ❌ Claude creates annoying `SUMMARY.md` files after every task
+- ❌ Claude generates 1000+ line monolithic files
+- ❌ Claude leaves TODO comments instead of implementing features
+- ❌ Mixed concerns and hard-to-maintain code
+
+### With These Plugins:
+- ✅ Sensitive files are automatically protected
+- ✅ No more unnecessary summary files
+- ✅ Enforced modular architecture with focused files
+- ✅ Complete, production-ready implementations
+- ✅ Better code quality through architectural guidance
+
 ## What are Claude Code Plugins?
 
 Claude Code plugins are collections of:
@@ -24,29 +64,56 @@ Or if you have cloned this repository locally:
 /plugin marketplace add /path/to/claude_code_marketplace
 ```
 
+## Quick Start
+
+After adding the marketplace, install the plugins you need:
+
+```bash
+# Install all plugins
+/plugin install dev-tools@claude-code-marketplace
+/plugin install file-guardian@claude-code-marketplace
+/plugin install code-quality-guardian@claude-code-marketplace
+
+# Or install them one by one as needed
+/plugin install file-guardian@claude-code-marketplace
+```
+
+Then start using them immediately:
+
+```bash
+# Protect your .env file
+/protect .env
+
+# Review your code
+/code-review
+
+# Check quality thresholds
+/quality-config
+```
+
+The guardian plugins work automatically with zero configuration! 🎉
+
 ## Available Plugins
 
-### Dev Tools
+### 🛠️ Dev Tools
 Essential development tools and utilities for common coding tasks.
 
 **Commands:**
-- `/code-review` - Comprehensive code review with quality checks
+- `/code-review` - Comprehensive code review with quality, security, and best practices analysis
 - `/refactor` - Intelligent code refactoring while preserving functionality
 - `/debug` - Systematic debugging assistance
-- `/social-media` - Generate professional social media posts for your project (supports `--platform` and `--language` options)
+- `/social-media` - Generate professional social media posts for your project
 
 **Agents:**
 - `test-generator` - Generate comprehensive test suites
 
-**Usage Examples:**
+**Usage Example:**
 
-Generate a LinkedIn post in English (default):
 ```bash
+# Generate a LinkedIn post in English (default)
 /social-media
-```
 
-Generate for a specific platform and language:
-```bash
+# Generate for a specific platform and language
 /social-media --platform linkedin --language german
 ```
 
@@ -55,70 +122,133 @@ Generate for a specific platform and language:
 /plugin install dev-tools@claude-code-marketplace
 ```
 
-### OpenSpec
-Spec-driven development plugin for breaking down PRDs into actionable specifications and tasks. Complements the existing OpenSpec commands (`/openspec:proposal`, `/openspec:apply`, `/openspec:archive`) with PRD analysis and breakdown capabilities.
+---
 
-**Commands:**
-- `/openspec:prd-breakdown` - Break down PRD into specs and tasks with full implementation plan
-- `/openspec:prd-split` - Split large PRDs into smaller, manageable feature specifications
-- `/openspec:prd-analyze` - Analyze PRD complexity and suggest breakdown strategies
-- `/openspec:spec-review` - Review and validate specs for completeness and quality
+### 🛡️ File Guardian
+Protect sensitive files from accidental edits and prevent unnecessary markdown summaries.
+
+**The Problem:** Claude might accidentally edit your `.env` file, `package-lock.json`, or create annoying `SUMMARY.md` files listing what it just did.
+
+**The Solution:** File Guardian uses hooks to intercept and block these operations before they happen.
 
 **Features:**
-- Intelligent PRD analysis and complexity assessment
-- Automatic breakdown of large PRDs into manageable specs
-- Support for both OpenSpec CLI and GitHub's spec-kit
-- Dependency graph analysis and critical path identification
-- Quality validation with actionable recommendations and auto-fix
-- Seamless integration with OpenSpec workflow
+- 🛡️ **Blacklist Protection** - Prevent edits to sensitive files using pattern matching
+- 📝 **Markdown Control** - Block unsolicited summary/recap markdown files
+- ⚡ **Automatic Blocking** - Hooks intercept operations before they happen
+- 🎯 **Pattern Matching** - Support for globs, directories, and exact matches
+- 📋 **Easy Management** - Slash commands to add/remove protections
+- 🚀 **Zero Configuration** - Works with sensible defaults
 
-**Complete Workflow:**
-1. Analyze PRD → `/openspec:prd-analyze`
-2. Break down → `/openspec:prd-breakdown`
-3. Review quality → `/openspec:spec-review`
-4. Create proposal → `/openspec:proposal` (existing)
-5. Implement → `/openspec:apply` (existing)
-6. Archive → `/openspec:archive` (existing)
-
-**Usage Examples:**
-
-Analyze PRD complexity first:
+**Commands:**
 ```bash
-/openspec:prd-analyze ./requirements.md --detailed
+/protect list              # View protected files
+/protect .env              # Protect specific file
+/protect secrets/          # Protect directory
+/protect *.key             # Protect by pattern
+/unprotect .env.example    # Remove protection
 ```
 
-Break down PRD into specs and tasks:
-```bash
-/openspec:prd-breakdown ./docs/PRD.md
-```
+**Default Protections:**
+- Environment files (`.env`, `.env.*`)
+- Secrets directory
+- Credential files (`*.key`, `*.pem`, `*credentials*.json`)
+- Lock files (`package-lock.json`, `pubspec.lock`, etc.)
+- Git internals (`.git/`)
+- Build artifacts (`build/`, `dist/`, `node_modules/`)
 
-Split a large PRD into feature specs:
-```bash
-/openspec:prd-split ./PRD.md --strategy features
-```
+**Markdown Protection:**
 
-Review and validate specifications:
-```bash
-/openspec:spec-review --strict --fix
-```
+File Guardian blocks unsolicited markdown files like:
+- `SUMMARY.md`, `RECAP.md`, `CHANGES.md`
+- `COMPLETION.md`, `OUTPUT.md`, `NOTES.md`
+- Files with summary-like content ("I created the following files...")
 
-Use spec-kit instead of OpenSpec CLI:
-```bash
-/openspec:prd-breakdown ./PRD.md --tool speckit
-```
+Markdown files are **allowed** when:
+- User explicitly requests them
+- In documentation directories (`docs/`)
+- Standard files (`README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`)
+
+**Configuration:** `.claude/forbidden_paths.txt`, `.claude/file_guardian_config.json`
 
 **Installation:**
 ```bash
-/plugin install openspec@claude-code-marketplace
+/plugin install file-guardian@claude-code-marketplace
 ```
 
-**Recommended Dependencies:**
-```bash
-# Install OpenSpec CLI (optional but recommended)
-npm install -g @fission-ai/openspec@latest
+---
 
-# Or use spec-kit (alternative)
-uvx --from git+https://github.com/github/spec-kit.git specify
+### 📏 Code Quality Guardian
+Prevent bloated files and enforce architectural best practices automatically.
+
+**The Problem:** Without guidance, LLMs might create:
+- Files that are too large (1000+ lines)
+- Mixed concerns (data + logic + UI in one file)
+- Incomplete code with TODO/FIXME comments
+- Hard to maintain god objects
+
+**The Solution:** Code Quality Guardian acts as an architectural advisor, blocking oversized files and incomplete code before they're created.
+
+**Features:**
+- 📏 **Automatic Size Checking** - Intercepts file writes before they happen
+- 🚫 **TODO/FIXME Blocking** - Prevents incomplete code with TODO comments
+- 🎯 **Smart Thresholds** - Different limits for different file types
+- 🤖 **Refactoring Agent** - Expert guidance for breaking up large files
+- ⚙️ **Configurable** - Customize thresholds per project
+- 🚀 **Zero Config** - Works with sensible defaults
+
+**Commands:**
+```bash
+/quality-config            # View current thresholds
+```
+
+**Default Thresholds:**
+
+| File Type | Max Lines | Rationale |
+|-----------|-----------|-----------|
+| `.dart`, `.py`, `.ts`, `.js` | 800 | General code files |
+| `.tsx`, `.jsx`, `.vue` | 600 | UI components (smaller = better) |
+| `.java`, `.go` | 1000 | Larger files common in these langs |
+| `.md`, `.txt` | 5000 | Documentation can be longer |
+| `.json` | 2000 | Data files |
+| Default | 1000 | Catch-all |
+
+**What Gets Blocked:**
+
+1. **Files exceeding size limits** with suggestions for domain-driven refactoring
+2. **TODO/FIXME/HACK comments** when `block_todos: true`:
+   - `TODO` - Unfinished implementations
+   - `FIXME` - Known issues
+   - `HACK` - Temporary solutions
+   - `XXX`, `TEMP`, `TMP` - Other incomplete markers
+
+**When Blocked:**
+
+Claude receives guidance to:
+- Break into smaller, focused modules
+- Use domain-driven design principles
+- Separate concerns (data, logic, UI)
+- Complete implementations instead of leaving TODOs
+
+**Configuration:** `.claude/quality_config.json`
+
+```json
+{
+  "default": 1000,
+  "block_todos": true,
+  "todo_patterns": ["TODO", "FIXME", "HACK", "XXX", "TEMP", "TMP"],
+  "extensions": {
+    ".dart": 600,
+    ".py": 500,
+    ".tsx": 400
+  }
+}
+```
+
+**Philosophy:** Based on Domain-Driven Design principles - bounded contexts, single responsibility, separation of concerns, testability, and maintainability.
+
+**Installation:**
+```bash
+/plugin install code-quality-guardian@claude-code-marketplace
 ```
 
 ## Creating Your Own Plugins
@@ -202,12 +332,34 @@ You are an expert code reviewer with 10+ years of experience...
 - Suggest improvements
 ```
 
-## MCP Servers
+---
 
-This marketplace includes MCP server configurations in `.mcp.json`:
+## How the Guardian Plugins Work
 
-- **sequential-thinking**: Advanced reasoning with chain-of-thought
-- **package-hero**: Package version management and quality ratings
+Both **File Guardian** and **Code Quality Guardian** use Claude Code's **hook system** to intercept operations before they execute:
+
+### Hook Architecture
+
+1. **PreToolUse Hooks** - Intercept `Write`, `Edit`, and `MultiEdit` operations
+2. **Python Validators** - Check file content against rules (blacklist, size, TODOs)
+3. **Block or Allow** - Return error message or allow operation to proceed
+
+This means problems are **prevented** rather than **corrected** - a much better developer experience!
+
+**Example Flow:**
+```
+Claude: "I'll create user_service.dart with 1200 lines..."
+   ↓
+Hook intercepts Write operation
+   ↓
+Python script checks file size (1200 > 800 line threshold)
+   ↓
+Hook blocks operation with helpful message
+   ↓
+Claude: "I'll break this into smaller modules instead..."
+```
+
+---
 
 ## Development
 

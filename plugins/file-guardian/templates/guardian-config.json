@@ -1,0 +1,11 @@
+{
+  "block_unsolicited_markdown": true,
+  "block_summary_content": true,
+  "allow_patterns": [
+    "docs/",
+    "README.md",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
+    "LICENSE.md"
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "moinsen-claude-code-marketplace",
-  "version": "1.2.0",
+  "version": "1.4.0",
   "owner": {
     "name": "Ulrich Diedrichsen",
     "url": "https://github.com/moinsen-dev"
@@ -25,25 +25,41 @@
       "category": "development"
     },
     {
-      "name": "openspec",
-      "source": "./plugins/openspec",
-      "description": "Spec-driven development plugin for breaking down PRDs into actionable specifications and tasks using OpenSpec and spec-kit",
-      "version": "1.2.0",
+      "name": "file-guardian",
+      "source": "./plugins/file-guardian",
+      "description": "Protect sensitive files from accidental edits and prevent unnecessary markdown summaries with configurable blacklists",
+      "version": "1.1.0",
       "author": {
         "name": "Ulrich Diedrichsen",
         "email": "[email protected]"
       },
       "keywords": [
-        "spec-driven",
-        "prd",
-        "requirements",
-        "specifications",
-        "openspec",
-        "spec-kit",
-        "planning",
-        "project-management"
+        "security",
+        "file-protection",
+        "blacklist",
+        "safety",
+        "automation"
       ],
-      "category": "development"
+      "category": "security"
+    },
+    {
+      "name": "code-quality-guardian",
+      "source": "./plugins/code-quality-guardian",
+      "description": "Prevent bloated files and incomplete code by detecting oversized files and TODO comments, suggesting refactoring and complete implementations",
+      "version": "1.1.0",
+      "author": {
+        "name": "Ulrich Diedrichsen",
+        "email": "[email protected]"
+      },
+      "keywords": [
+        "code-quality",
+        "refactoring",
+        "architecture",
+        "best-practices",
+        "file-size",
+        "domain-driven-design"
+      ],
+      "category": "quality"
     }
   ]
 }
