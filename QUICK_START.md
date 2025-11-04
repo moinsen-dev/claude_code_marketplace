@@ -20,26 +20,46 @@ Get up and running with the Claude Code Marketplace in minutes.
 /plugin list
 ```
 
-### 3. Install a Plugin
+### 3. Install Plugins
 
 ```bash
+# Install dev tools
 /plugin install dev-tools@claude-code-marketplace
+
+# Install guard (recommended!)
+/plugin install guard@claude-code-marketplace
 ```
 
-### 4. Use Plugin Commands
+### 4. Initialize Guard (Recommended)
 
 ```bash
-# Run a code review
-/code-review
-
-# Get refactoring help
-/refactor
-
-# Debug assistance
-/debug
+# Set up guard with default protections
+/guard:init
 ```
 
-### 5. Manage Plugins
+This creates:
+- `.claude/guard/forbidden_paths.txt` (23+ default protections)
+- `.claude/guard/quality_config.json` (file size thresholds)
+- `.claude/guard/file_guardian_config.json` (markdown settings)
+- `.claude/guard/overrides.json` (guardian states)
+- `.claude/hooks.json` (hook configuration)
+
+### 5. Use Plugin Commands
+
+```bash
+# Dev Tools
+/code-review        # Run a code review
+/refactor           # Get refactoring help
+/debug              # Debug assistance
+
+# Guard
+/guard:status       # View all guardian states
+/guard:config       # View quality thresholds
+/guard:protect .env # Protect additional files
+/guard:disable all  # Disable all guardians temporarily
+```
+
+### 6. Manage Plugins
 
 ```bash
 # List installed plugins
@@ -144,6 +164,71 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 ### MCP Servers
 - Location: `plugins/your-plugin/.mcp.json`
 - Purpose: Connect external tools and data sources
+
+## Guard Plugin Quick Reference
+
+### The 6 Guardians
+
+1. **File Protection** - Blocks edits to `.env`, lock files, `.git/`, secrets
+2. **Markdown Control** - Blocks unsolicited `SUMMARY.md` files
+3. **Code Quality** - Enforces file size limits, blocks TODOs
+4. **Generated Files** - Protects `*.g.dart`, localization files
+5. **Tool Guardian** - Enforces package manager usage (optional)
+6. **Package Guardian** - Warns when editing manifests directly
+
+### Essential Commands
+
+```bash
+# Initial setup
+/guard:init
+
+# View status
+/guard:status                    # See all guardian states
+
+# Configuration
+/guard:config                    # View thresholds
+
+# File protection
+/guard:protect mysecret.yaml     # Add protection
+/guard:protect *.secret          # Pattern matching
+/guard:protect list              # View all
+/guard:unprotect build/          # Remove
+
+# Override system
+/guard:disable markdown-control  # Disable one
+/guard:disable all               # Disable all
+/guard:enable all                # Re-enable all
+```
+
+### When to Use Override System
+
+**Disable guardians when:**
+- Importing legacy code (may have large files, TODOs)
+- Working with generated test data
+- One-time operations that need flexibility
+
+**Always re-enable after:**
+```bash
+/guard:enable all
+```
+
+### Configuration Files
+
+Edit these in `.claude/guard/` to customize:
+
+- **forbidden_paths.txt** - Add your own patterns
+- **quality_config.json** - Adjust file size thresholds
+- **file_guardian_config.json** - Markdown control settings
+
+Example custom threshold:
+```json
+{
+  "extensions": {
+    ".dart": 600,
+    ".ts": 500
+  }
+}
+```
 
 ## Common Tasks
 

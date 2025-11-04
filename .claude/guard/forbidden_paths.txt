@@ -1,0 +1,45 @@
+# File Guardian - Default Protected Patterns
+# Edit this file to customize protection for your project
+# 
+# Pattern syntax:
+# - Exact filename: .env
+# - Directory (with trailing /): secrets/
+# - Glob patterns: *.key, *credentials*.json
+# - Relative paths: src/config/prod.yaml
+
+# Environment & Secrets
+.env
+.env.*
+secrets/
+*.key
+*.pem
+*credentials*.json
+*-key.json
+
+# Lock Files (prevent dependency chaos)
+package-lock.json
+yarn.lock
+pubspec.lock
+Cargo.lock
+poetry.lock
+pnpm-lock.yaml
+
+# Git Internals
+.git/
+
+# Build Artifacts
+build/
+dist/
+node_modules/
+.dart_tool/
+target/
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# Production Configs (uncomment if needed)
+# production.yaml
+# prod-config.json
+# config.prod.ts
