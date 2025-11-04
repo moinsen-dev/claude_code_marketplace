@@ -131,6 +131,61 @@ def get_command_example(command: str, preferred_tool: str, tool_name: str) -> Op
 
     return None
 
+def check_forbidden_command(command: str, project_root: Path) -> Optional[Dict]:
+    """
+    Check if command matches any forbidden commands.
+
+    Returns: forbidden command config or None
+    """
+    # Load configuration
+    config_file = project_root / '.claude' / 'guard' / 'quality_config.json'
+
+    if not config_file.exists():
+        return None
+
+    try:
+        with open(config_file) as f:
+            full_config = json.load(f)
+            command_config = full_config.get('command_guardian', {})
+    except:
+        return None
+
+    if not command_config.get('enabled', False):
+        return None  # Command guardian disabled
+
+    forbidden_commands = command_config.get('forbidden_commands', [])
+    if not forbidden_commands:
+        return None
+
+    command_normalized = normalize_command(command)
+
+    for forbidden in forbidden_commands:
+        pattern = forbidden.get('pattern', '')
+        match_type = forbidden.get('match_type', 'exact')
+
+        if not pattern:
+            continue
+
+        # Check match based on type
+        matched = False
+
+        if match_type == 'exact':
+            matched = command_normalized == pattern or command_normalized.lower() == pattern.lower()
+        elif match_type == 'starts_with':
+            matched = command_normalized.startswith(pattern) or command_normalized.lower().startswith(pattern.lower())
+        elif match_type == 'contains':
+            matched = pattern in command_normalized or pattern.lower() in command_normalized.lower()
+        elif match_type == 'regex':
+            try:
+                matched = bool(re.search(pattern, command, re.IGNORECASE))
+            except re.error:
+                continue
+
+        if matched:
+            return forbidden
+
+    return None
+
 def main():
     try:
         data = json.load(sys.stdin)
@@ -147,6 +202,38 @@ def main():
     # Get project root
     project_root = Path(os.getenv('CLAUDE_PROJECT_DIR', os.getcwd()))
 
+    # Extract command
+    command = tool_input.get('command', '')
+
+    if not command:
+        sys.exit(0)
+
+    # ===== COMMAND GUARDIAN CHECK =====
+    # Check if command-guardian is enabled in overrides
+    if is_guardian_enabled(project_root, "command-guardian"):
+        forbidden = check_forbidden_command(command, project_root)
+
+        if forbidden:
+            # Block the command
+            pattern = forbidden.get('pattern', '')
+            reason = forbidden.get('reason', 'Command is forbidden by project configuration')
+            match_type = forbidden.get('match_type', 'exact')
+
+            print(f"\n🚫 COMMAND GUARDIAN: Command blocked!", file=sys.stderr)
+            print(f"   📄 Command: {command}", file=sys.stderr)
+            print(f"   🚫 Matched pattern: {pattern} (match type: {match_type})", file=sys.stderr)
+            print(f"", file=sys.stderr)
+            print(f"   💡 Reason:", file=sys.stderr)
+            print(f"      {reason}", file=sys.stderr)
+            print(f"", file=sys.stderr)
+            print(f"   ⚙️  To allow this command:", file=sys.stderr)
+            print(f"      • Remove from forbidden_commands in quality_config.json", file=sys.stderr)
+            print(f"      • Or disable: /guard:disable command-guardian", file=sys.stderr)
+            print(f"", file=sys.stderr)
+
+            sys.exit(2)  # Block the operation
+
+    # ===== TOOL GUARDIAN CHECK =====
     # Check if this guardian is enabled
     if not is_guardian_enabled(project_root, "tool-guardian"):
         sys.exit(0)  # Disabled, allow operation
@@ -160,12 +247,6 @@ def main():
     replacements = config.get('tool_replacements', [])
     if not replacements:
         sys.exit(0)  # No replacements configured
-
-    # Extract command
-    command = tool_input.get('command', '')
-
-    if not command:
-        sys.exit(0)
 
     # Check if command uses disallowed tool
     replacement = detect_disallowed_tool(command, replacements)

@@ -44,6 +44,11 @@ GUARDIANS = {
         "name": "Package Guardian",
         "description": "Warns about direct package manifest edits",
         "icon": "📦"
+    },
+    "command-guardian": {
+        "name": "Command Guardian",
+        "description": "Blocks specific bash commands",
+        "icon": "🚫"
     }
 }
 

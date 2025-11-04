@@ -44,6 +44,11 @@ GUARDIANS = {
         "name": "Package Guardian",
         "description": "Warns about direct package manifest edits",
         "script": "validate_package_edits.py"
+    },
+    "command-guardian": {
+        "name": "Command Guardian",
+        "description": "Blocks specific bash commands",
+        "script": "validate_tool_usage.py"
     }
 }
 

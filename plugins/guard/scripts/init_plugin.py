@@ -109,6 +109,21 @@ DEFAULT_QUALITY_CONFIG = {
             "version:\\s*\\^?\\d+\\.\\d+",
             "@\\d+\\.\\d+"
         ]
+    },
+    "command_guardian": {
+        "enabled": False,
+        "forbidden_commands": [
+            {
+                "pattern": "flutter run",
+                "match_type": "exact",
+                "reason": "I want to test manually in VSCode or my preferred tool"
+            },
+            {
+                "pattern": "rm -rf /",
+                "match_type": "exact",
+                "reason": "Destructive command - please confirm before running"
+            }
+        ]
     }
 }
 
@@ -119,7 +134,8 @@ DEFAULT_OVERRIDES = {
     "code-quality": True,
     "generated-files": True,
     "tool-guardian": True,
-    "package-guardian": True
+    "package-guardian": True,
+    "command-guardian": True
 }
 
 # Unified plugin hooks
@@ -281,7 +297,19 @@ def main():
             json.dump(DEFAULT_OVERRIDES, f, indent=2)
         print(f"✓ Created overrides file: {overrides_file.relative_to(project_dir)}")
 
-    # 5. Merge hooks into hooks.json (kept at .claude/ for compatibility)
+    # 5. Copy README.md template to guard directory
+    guard_readme = guard_dir / "README.md"
+    if guard_readme.exists():
+        print(f"✓ Guard README already exists: {guard_readme.relative_to(project_dir)}")
+    else:
+        readme_template = plugin_root / "templates" / "guard-README.md"
+        if readme_template.exists():
+            shutil.copy(readme_template, guard_readme)
+            print(f"✓ Created guard README: {guard_readme.relative_to(project_dir)}")
+        else:
+            print(f"⚠️  README template not found (this is okay for older installations)")
+
+    # 6. Merge hooks into hooks.json (kept at .claude/ for compatibility)
     hooks_file = claude_dir / "hooks.json"
     existing_hooks = {}
     if hooks_file.exists():
@@ -298,13 +326,14 @@ def main():
     else:
         print(f"✓ Created hooks file: {hooks_file.relative_to(project_dir)}")
 
-    # 6. Make scripts executable
+    # 7. Make scripts executable
     make_scripts_executable(plugin_root)
     print(f"✓ Made scripts executable")
 
-    # 7. Success message
+    # 8. Success message
     print("\n✅ Guard Plugin initialized successfully!\n")
     print("Configuration Files:")
+    print(f"  • README: .claude/guard/README.md")
     print(f"  • Blacklist: .claude/guard/forbidden_paths.txt")
     print(f"  • File Protection: .claude/guard/file_guardian_config.json")
     print(f"  • Code Quality: .claude/guard/quality_config.json")
@@ -343,6 +372,13 @@ def main():
     print(f"  • Default: Disabled (enable per project)")
     print(f"  • Presets: npm→pnpm, pip→uv")
     print(f"  • Enable: Set 'tool_guardian.enabled': true")
+
+    print("\n🚫 Command Guardian:")
+    print(f"  • Blocks specific bash commands with custom reasons")
+    print(f"  • Default: Disabled (enable per project)")
+    print(f"  • Examples: flutter run, rm -rf /")
+    print(f"  • Enable: Set 'command_guardian.enabled': true")
+    print(f"  • Match types: exact, starts_with, contains, regex")
 
     print("\nNext Steps:")
     print(f"  • Add protection: /guard:protect <file-or-pattern>")

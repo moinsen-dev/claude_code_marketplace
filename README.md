@@ -20,7 +20,7 @@ A custom marketplace for Claude Code plugins, providing specialized tools and wo
 This marketplace focuses on **quality and safety** through intelligent automation:
 
 - 🛠️ **Dev Tools** - Essential development utilities (code review, refactoring, debugging, social media)
-- 🛡️ **Guard** - Unified protection system with 6 guardians for code quality, security, and maintainability
+- 🛡️ **Guard** - Unified protection system with 7 guardians for code quality, security, and maintainability
 
 **Philosophy:** Prevention over correction. Use hooks to stop problems before they happen, not after.
 
@@ -35,7 +35,7 @@ This marketplace focuses on **quality and safety** through intelligent automatio
 - ❌ Mixed concerns and hard-to-maintain code
 
 ### With Guard Plugin:
-- ✅ **6 guardians** protecting your codebase automatically
+- ✅ **7 guardians** protecting your codebase automatically
 - ✅ Sensitive files are automatically protected (secrets, lock files, .git/)
 - ✅ No more unnecessary summary files
 - ✅ Enforced modular architecture with size limits per file type
@@ -136,7 +136,7 @@ Essential development tools and utilities for common coding tasks.
 ---
 
 ### 🛡️ Guard
-**Unified protection system with 6 independent guardians for comprehensive codebase security and quality.**
+**Unified protection system with 7 independent guardians for comprehensive codebase security and quality.**
 
 **The Problem:** Without protection, Claude might:
 - Accidentally edit `.env` files, `package-lock.json`, or other sensitive files
@@ -146,11 +146,11 @@ Essential development tools and utilities for common coding tasks.
 - Edit generated files (*.g.dart, *.freezed.dart) instead of source files
 - Use wrong package managers or edit manifests directly
 
-**The Solution:** Guard uses Claude Code's hook system with 6 specialized guardians that intercept and block problematic operations **before** they happen.
+**The Solution:** Guard uses Claude Code's hook system with 7 specialized guardians that intercept and block problematic operations **before** they happen.
 
 ---
 
-## The 6 Guardians
+## The 7 Guardians
 
 ### 1️⃣ File Protection Guardian
 Protects sensitive files using blacklist pattern matching.
@@ -262,6 +262,48 @@ Warns when editing package manifests directly (warning-only).
 
 ---
 
+### 7️⃣ Command Guardian
+Blocks specific bash commands based on project configuration (disabled by default).
+
+**Blocks:**
+- Configured commands that shouldn't run in this project
+- Custom patterns: exact match, starts_with, contains, or regex
+- Examples: `flutter run`, `rm -rf /`, or any other command
+
+**When Blocked:**
+- Shows the command that was blocked
+- Displays the custom reason from configuration
+- Provides instructions to allow or configure
+
+**Enable & Configure:**
+```json
+{
+  "command_guardian": {
+    "enabled": true,
+    "forbidden_commands": [
+      {
+        "pattern": "flutter run",
+        "match_type": "exact",
+        "reason": "I want to test manually in VSCode"
+      },
+      {
+        "pattern": "rm -rf",
+        "match_type": "starts_with",
+        "reason": "Destructive command - please confirm first"
+      }
+    ]
+  }
+}
+```
+
+**Match Types:**
+- `exact`: Command must match exactly
+- `starts_with`: Command must start with pattern
+- `contains`: Command must contain pattern
+- `regex`: Custom regex pattern
+
+---
+
 ## Guard Features
 
 ### 🎛️ Flexible Override System
@@ -353,7 +395,7 @@ Guard provides **exceptional error messages** with:
 
 Guard has been comprehensively tested:
 - ✅ **20/20 tests passed (100%)**
-- ✅ All 6 guardians working perfectly
+- ✅ All 7 guardians working perfectly
 - ✅ Error message quality: 9.8/10
 - ✅ Zero critical bugs
 - ✅ **Overall Grade: A+ (95/100)**

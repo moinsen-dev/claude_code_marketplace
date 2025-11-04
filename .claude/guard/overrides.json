@@ -1,8 +1,9 @@
 {
   "file-protection": true,
-  "markdown-control": true,
-  "code-quality": true,
+  "markdown-control": false,
+  "code-quality": false,
   "generated-files": true,
   "tool-guardian": true,
-  "package-guardian": true
+  "package-guardian": true,
+  "command-guardian": true
 }

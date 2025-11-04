@@ -167,7 +167,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## Guard Plugin Quick Reference
 
-### The 6 Guardians
+### The 7 Guardians
 
 1. **File Protection** - Blocks edits to `.env`, lock files, `.git/`, secrets
 2. **Markdown Control** - Blocks unsolicited `SUMMARY.md` files
@@ -175,6 +175,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 4. **Generated Files** - Protects `*.g.dart`, localization files
 5. **Tool Guardian** - Enforces package manager usage (optional)
 6. **Package Guardian** - Warns when editing manifests directly
+7. **Command Guardian** - Blocks specific bash commands (disabled by default)
 
 ### Essential Commands
 

@@ -111,5 +111,20 @@
       "version:\\s*\\^?\\d+\\.\\d+",
       "@\\d+\\.\\d+"
     ]
+  },
+  "command_guardian": {
+    "enabled": true,
+    "forbidden_commands": [
+      {
+        "pattern": "flutter run",
+        "match_type": "exact",
+        "reason": "I want to test manually in VSCode or my preferred tool"
+      },
+      {
+        "pattern": "rm -rf",
+        "match_type": "starts_with",
+        "reason": "Destructive command - please confirm before running"
+      }
+    ]
   }
 }
