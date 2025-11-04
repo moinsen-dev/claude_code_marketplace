@@ -14,45 +14,29 @@ from pathlib import Path
 import fnmatch
 import os
 
+def is_guardian_enabled(project_root: Path, guardian_name: str) -> bool:
+    """Check if a specific guardian is enabled in overrides."""
+    overrides_file = project_root / '.claude' / 'guard' / 'overrides.json'
+
+    if not overrides_file.exists():
+        return True  # Default: enabled
+
+    try:
+        with open(overrides_file) as f:
+            overrides = json.load(f)
+            return overrides.get(guardian_name, True)
+    except:
+        return True  # On error, assume enabled
+
 def load_blacklist(project_root: Path) -> list[str]:
     """Load forbidden paths from project blacklist file."""
-    blacklist_file = project_root / '.claude' / 'forbidden_paths.txt'
-    
+    blacklist_file = project_root / '.claude' / 'guard' / 'forbidden_paths.txt'
+
     if not blacklist_file.exists():
         # Try to create from template
         plugin_root = Path(os.getenv('CLAUDE_PLUGIN_ROOT', ''))
         template = plugin_root / 'templates' / 'default-blacklist.txt'
-        
-        if template.exists():
-            # First run - create default blacklist
-            blacklist_file.parent.mkdir(parents=True, exist_ok=True)
-            blacklist_file.write_text(template.read_text())
-            print(f"ℹ️  Created default blacklist at {blacklist_file}", file=sys.stderr)
-#!/usr/bin/env python3
-# /// script
-# requires-python = ">=3.11"
-# dependencies = []
-# ///
 
-"""
-File Guardian - Blacklist Validator
-Prevents editing of forbidden files based on project blacklist.
-"""
-import json
-import sys
-from pathlib import Path
-import fnmatch
-import os
-
-def load_blacklist(project_root: Path) -> list[str]:
-    """Load forbidden paths from project blacklist file."""
-    blacklist_file = project_root / '.claude' / 'forbidden_paths.txt'
-    
-    if not blacklist_file.exists():
-        # Try to create from template
-        plugin_root = Path(os.getenv('CLAUDE_PLUGIN_ROOT', ''))
-        template = plugin_root / 'templates' / 'default-blacklist.txt'
-        
         if template.exists():
             # First run - create default blacklist
             blacklist_file.parent.mkdir(parents=True, exist_ok=True)
@@ -61,7 +45,7 @@ def load_blacklist(project_root: Path) -> list[str]:
         else:
             # No template, no blacklist - allow everything
             return []
-    
+
     with open(blacklist_file) as f:
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
@@ -113,7 +97,11 @@ def main():
     
     # Get project root
     project_root = Path(os.getenv('CLAUDE_PROJECT_DIR', os.getcwd()))
-    
+
+    # Check if this guardian is enabled
+    if not is_guardian_enabled(project_root, "file-protection"):
+        sys.exit(0)  # Disabled, allow operation
+
     # Load blacklist
     forbidden_paths = load_blacklist(project_root)
     

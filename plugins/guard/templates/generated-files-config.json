@@ -1,0 +1,55 @@
+{
+  "generated_files": {
+    "enabled": true,
+    "mappings": [
+      {
+        "pattern": "lib/l10n/app_localizations*.dart",
+        "source": "lib/l10n/app_*.arb",
+        "description": "Flutter localization files",
+        "generate_command": "flutter gen-l10n"
+      },
+      {
+        "pattern": "**/*.g.dart",
+        "source": "**/*.dart",
+        "description": "Dart code generation (build_runner)",
+        "generate_command": "dart run build_runner build"
+      },
+      {
+        "pattern": "**/*.freezed.dart",
+        "source": "**/*.dart",
+        "description": "Freezed immutable models",
+        "generate_command": "dart run build_runner build"
+      },
+      {
+        "pattern": "**/*.gr.dart",
+        "source": "**/*.dart",
+        "description": "Auto Route navigation",
+        "generate_command": "dart run build_runner build"
+      },
+      {
+        "pattern": "**/*.pb.dart",
+        "source": "**/*.proto",
+        "description": "Protocol Buffers",
+        "generate_command": "protoc --dart_out=. *.proto"
+      },
+      {
+        "pattern": "**/*.pbenum.dart",
+        "source": "**/*.proto",
+        "description": "Protocol Buffers enums",
+        "generate_command": "protoc --dart_out=. *.proto"
+      },
+      {
+        "pattern": "**/*.pbjson.dart",
+        "source": "**/*.proto",
+        "description": "Protocol Buffers JSON",
+        "generate_command": "protoc --dart_out=. *.proto"
+      },
+      {
+        "pattern": "**/*.pbserver.dart",
+        "source": "**/*.proto",
+        "description": "Protocol Buffers server",
+        "generate_command": "protoc --dart_out=. *.proto"
+      }
+    ]
+  }
+}

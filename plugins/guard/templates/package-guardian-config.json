@@ -1,0 +1,113 @@
+{
+  "package_guardian": {
+    "enabled": true,
+    "package_managers": [
+      {
+        "name": "npm",
+        "manifest_files": ["package.json"],
+        "add_command": "npm install {package}",
+        "add_dev_command": "npm install --save-dev {package}",
+        "description": "Node.js package manager"
+      },
+      {
+        "name": "pnpm",
+        "manifest_files": ["package.json"],
+        "add_command": "pnpm add {package}",
+        "add_dev_command": "pnpm add -D {package}",
+        "description": "Fast, disk-efficient Node.js package manager"
+      },
+      {
+        "name": "yarn",
+        "manifest_files": ["package.json"],
+        "add_command": "yarn add {package}",
+        "add_dev_command": "yarn add --dev {package}",
+        "description": "Reliable Node.js package manager"
+      },
+      {
+        "name": "bun",
+        "manifest_files": ["package.json"],
+        "add_command": "bun add {package}",
+        "add_dev_command": "bun add --dev {package}",
+        "description": "Ultra-fast JavaScript runtime & package manager"
+      },
+      {
+        "name": "pip",
+        "manifest_files": ["requirements.txt", "pyproject.toml"],
+        "add_command": "pip install {package}",
+        "description": "Python package installer"
+      },
+      {
+        "name": "uv",
+        "manifest_files": ["requirements.txt", "pyproject.toml"],
+        "add_command": "uv pip install {package}",
+        "description": "Ultra-fast Python package manager"
+      },
+      {
+        "name": "poetry",
+        "manifest_files": ["pyproject.toml"],
+        "add_command": "poetry add {package}",
+        "add_dev_command": "poetry add --group dev {package}",
+        "description": "Python dependency management & packaging"
+      },
+      {
+        "name": "pub",
+        "manifest_files": ["pubspec.yaml"],
+        "add_command": "flutter pub add {package}",
+        "add_dev_command": "flutter pub add --dev {package}",
+        "description": "Dart/Flutter package manager"
+      },
+      {
+        "name": "go",
+        "manifest_files": ["go.mod"],
+        "add_command": "go get {package}",
+        "description": "Go module manager"
+      },
+      {
+        "name": "cargo",
+        "manifest_files": ["Cargo.toml"],
+        "add_command": "cargo add {package}",
+        "add_dev_command": "cargo add --dev {package}",
+        "description": "Rust package manager"
+      },
+      {
+        "name": "gem",
+        "manifest_files": ["Gemfile"],
+        "add_command": "bundle add {package}",
+        "description": "Ruby package manager"
+      },
+      {
+        "name": "composer",
+        "manifest_files": ["composer.json"],
+        "add_command": "composer require {package}",
+        "add_dev_command": "composer require --dev {package}",
+        "description": "PHP dependency manager"
+      },
+      {
+        "name": "maven",
+        "manifest_files": ["pom.xml"],
+        "add_command": "Add dependency to pom.xml and run: mvn install",
+        "description": "Java build & dependency manager"
+      },
+      {
+        "name": "gradle",
+        "manifest_files": ["build.gradle", "build.gradle.kts"],
+        "add_command": "Add implementation '{package}' to dependencies block",
+        "description": "Java/Kotlin build tool"
+      },
+      {
+        "name": "nuget",
+        "manifest_files": ["*.csproj", "packages.config"],
+        "add_command": "dotnet add package {package}",
+        "description": ".NET package manager"
+      }
+    ],
+    "detection_patterns": [
+      "\"version\"\\s*:\\s*\"\\d+\\.\\d+",
+      "version\\s*=\\s*\"\\d+\\.\\d+",
+      "version:\\s*\\^?\\d+\\.\\d+",
+      "@\\d+\\.\\d+"
+    ],
+    "warning_message": "⚠️  PACKAGE GUARDIAN: Direct package manifest edit detected!",
+    "suggestion_template": "💡 Instead of editing {manifest} directly, use the package manager:\n   {command}"
+  }
+}

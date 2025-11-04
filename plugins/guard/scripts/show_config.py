@@ -33,8 +33,8 @@ DEFAULT_CONFIG = {
 
 def main():
     project_root = Path(os.getenv('CLAUDE_PROJECT_DIR', os.getcwd()))
-    config_file = project_root / '.claude' / 'quality_config.json'
-    
+    config_file = project_root / '.claude' / 'guard' / 'quality_config.json'
+
     print("📏 Code Quality Guardian - Configuration")
     print("=" * 50)
     

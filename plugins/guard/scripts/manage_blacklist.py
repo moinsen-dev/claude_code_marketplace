@@ -15,7 +15,7 @@ import os
 def get_blacklist_path() -> Path:
     """Get the path to the project's blacklist file."""
     project_root = Path(os.getenv('CLAUDE_PROJECT_DIR', os.getcwd()))
-    return project_root / '.claude' / 'forbidden_paths.txt'
+    return project_root / '.claude' / 'guard' / 'forbidden_paths.txt'
 
 def ensure_blacklist_exists():
     """Ensure blacklist file exists, create from template if needed."""

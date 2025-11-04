@@ -2,7 +2,7 @@
 description: View and configure code quality thresholds
 ---
 
-# quality-config
+# config
 
 View and customize file size thresholds for different file types.
 
@@ -10,10 +10,10 @@ View and customize file size thresholds for different file types.
 
 ```bash
 # View current configuration
-/quality-config
+/guard:config
 
 # Show available options
-/quality-config help
+/guard:config help
 ```
 
 ## Configuration

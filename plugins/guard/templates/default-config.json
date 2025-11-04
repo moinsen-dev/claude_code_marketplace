@@ -1,0 +1,91 @@
+{
+  "default": 1000,
+  "block_todos": true,
+  "todo_patterns": ["TODO", "FIXME", "HACK", "XXX", "TEMP", "TMP"],
+  "extensions": {
+    ".md": 5000,
+    ".json": 2000,
+    ".txt": 5000,
+    ".dart": 800,
+    ".py": 800,
+    ".ts": 800,
+    ".js": 800,
+    ".tsx": 600,
+    ".jsx": 600,
+    ".vue": 600,
+    ".java": 1000,
+    ".go": 1000,
+    ".rs": 1000,
+    ".cpp": 1000,
+    ".c": 1000,
+    ".cs": 1000,
+    ".php": 800,
+    ".rb": 800,
+    ".swift": 800,
+    ".kt": 800
+  },
+  "markdown_splitter": {
+    "enabled": true,
+    "auto_suggest_threshold": 2000,
+    "target_chunk_size": 800,
+    "split_strategy": "headers",
+    "preserve_original": true,
+    "create_index": true
+  },
+  "generated_files": {
+    "enabled": true,
+    "mappings": [
+      {
+        "pattern": "lib/l10n/app_localizations*.dart",
+        "source": "lib/l10n/app_*.arb",
+        "description": "Flutter localization files",
+        "generate_command": "flutter gen-l10n"
+      },
+      {
+        "pattern": "**/*.g.dart",
+        "source": "**/*.dart",
+        "description": "Dart code generation (build_runner)",
+        "generate_command": "dart run build_runner build"
+      },
+      {
+        "pattern": "**/*.freezed.dart",
+        "source": "**/*.dart",
+        "description": "Freezed immutable models",
+        "generate_command": "dart run build_runner build"
+      },
+      {
+        "pattern": "**/*.gr.dart",
+        "source": "**/*.dart",
+        "description": "Auto Route navigation",
+        "generate_command": "dart run build_runner build"
+      }
+    ]
+  },
+  "tool_guardian": {
+    "enabled": false,
+    "tool_replacements": [
+      {
+        "tool_name": "npm",
+        "preferred_tool": "pnpm",
+        "patterns": ["npm install", "npm i ", "npm add", "npm ci", "npm run", "npm test", "npm start"],
+        "reason": "This project uses pnpm for faster, disk-efficient package management",
+        "examples": [
+          "pnpm install",
+          "pnpm add [package]",
+          "pnpm run [script]"
+        ]
+      },
+      {
+        "tool_name": "pip",
+        "preferred_tool": "uv",
+        "patterns": ["pip install", "pip3 install", "python -m pip", "python3 -m pip"],
+        "reason": "This project uses uv for 10-100x faster Python package management",
+        "examples": [
+          "uv pip install [package]",
+          "uv pip sync requirements.txt",
+          "uv run python [script]"
+        ]
+      }
+    ]
+  }
+}

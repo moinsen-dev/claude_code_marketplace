@@ -34,10 +34,24 @@ DEFAULT_THRESHOLDS = {
     }
 }
 
+def is_guardian_enabled(project_root: Path, guardian_name: str) -> bool:
+    """Check if a specific guardian is enabled in overrides."""
+    overrides_file = project_root / '.claude' / 'guard' / 'overrides.json'
+
+    if not overrides_file.exists():
+        return True  # Default: enabled
+
+    try:
+        with open(overrides_file) as f:
+            overrides = json.load(f)
+            return overrides.get(guardian_name, True)
+    except:
+        return True  # On error, assume enabled
+
 def load_config(project_root: Path) -> dict:
     """Load custom thresholds or use defaults."""
-    config_file = project_root / '.claude' / 'quality_config.json'
-    
+    config_file = project_root / '.claude' / 'guard' / 'quality_config.json'
+
     if config_file.exists():
         with open(config_file) as f:
             custom_config = json.load(f)
@@ -101,13 +115,35 @@ def detect_todos(content: str, config: dict) -> list[dict]:
 def should_block_file(file_path: str, content: str, config: dict) -> tuple[bool, int, int]:
     """
     Check if file should be blocked due to size.
-    
+
     Returns: (should_block, line_count, threshold)
     """
     threshold = get_threshold_for_file(file_path, config)
     line_count = count_lines(content)
-    
+
     return line_count > threshold, line_count, threshold
+
+def should_suggest_markdown_split(file_path: str, line_count: int, config: dict) -> bool:
+    """
+    Check if markdown file should be suggested for splitting.
+
+    Returns: True if file is markdown and exceeds split threshold
+    """
+    path = Path(file_path)
+    ext = path.suffix.lower()
+
+    # Only for markdown files
+    if ext not in ['.md', '.markdown']:
+        return False
+
+    # Check if markdown splitter is enabled
+    md_config = config.get("markdown_splitter", {})
+    if not md_config.get("enabled", True):
+        return False
+
+    # Check if exceeds split threshold
+    split_threshold = md_config.get("auto_suggest_threshold", 2000)
+    return line_count > split_threshold
 
 def main():
     try:
@@ -124,20 +160,38 @@ def main():
     
     # Get project root
     project_root = Path(os.getenv('CLAUDE_PROJECT_DIR', os.getcwd()))
-    
+
+    # Check if this guardian is enabled
+    if not is_guardian_enabled(project_root, "code-quality"):
+        sys.exit(0)  # Disabled, allow operation
+
     # Load configuration
     config = load_config(project_root)
     
     # Extract file path and content
     file_path = tool_input.get('file_path') or tool_input.get('path')
-    
-    # For Write tool
-    if 'file_text' in tool_input:
-        content = tool_input.get('file_text', '')
-    # For Edit tool - need to check if it's a full rewrite
-    elif 'new_str' in tool_input:
-        # This is str_replace, we'll allow it
-        sys.exit(0)
+
+    # For Write tool (uses 'content' parameter)
+    if 'content' in tool_input:
+        content = tool_input.get('content', '')
+    # For Edit tool - need to check the result after edit
+    elif 'new_string' in tool_input:
+        old_string = tool_input.get('old_string', '')
+        new_string = tool_input.get('new_string', '')
+
+        # Read current file content and apply the replacement
+        file_path_obj = Path(file_path)
+        if not file_path_obj.exists():
+            # New file, use new_string as content
+            content = new_string
+        else:
+            # Apply the string replacement to get resulting content
+            try:
+                current_content = file_path_obj.read_text()
+                content = current_content.replace(old_string, new_string, 1)
+            except Exception:
+                # Can't read file, allow the operation
+                sys.exit(0)
     else:
         # Unknown format, allow it
         sys.exit(0)
@@ -147,20 +201,20 @@ def main():
     
     # Check for TODO comments first (higher priority)
     todos = detect_todos(content, config)
-    
+
     if todos:
         print(f"\n🚫 CODE QUALITY GUARDIAN: TODO/FIXME comments detected!", file=sys.stderr)
         print(f"   📄 File: {file_path}", file=sys.stderr)
         print(f"   ⚠️  Found {len(todos)} incomplete marker(s):", file=sys.stderr)
         print(f"", file=sys.stderr)
-        
+
         # Show first 5 TODOs
         for todo in todos[:5]:
             print(f"      Line {todo['line_number']:4}: {todo['line_content'][:80]}", file=sys.stderr)
-        
+
         if len(todos) > 5:
             print(f"      ... and {len(todos) - 5} more", file=sys.stderr)
-        
+
         print(f"", file=sys.stderr)
         print(f"   💡 Code should be complete and production-ready:", file=sys.stderr)
         print(f"      • Implement the missing functionality instead", file=sys.stderr)
@@ -169,11 +223,40 @@ def main():
         print(f"", file=sys.stderr)
         print(f"   🤖 Try: Ask me to complete these implementations", file=sys.stderr)
         print(f"   ⚙️  To allow TODOs: Set 'block_todos': false in quality_config.json", file=sys.stderr)
-        
+
         sys.exit(2)  # Block the operation
-    
+
     # Check if file is too large
     should_block, line_count, threshold = should_block_file(file_path, content, config)
+
+    # Check if markdown file should be suggested for splitting (before blocking)
+    if should_suggest_markdown_split(file_path, line_count, config):
+        md_config = config.get("markdown_splitter", {})
+        split_threshold = md_config.get("auto_suggest_threshold", 2000)
+
+        print(f"\n📄 MARKDOWN SPLITTER: Large markdown file detected!", file=sys.stderr)
+        print(f"   📄 File: {file_path}", file=sys.stderr)
+        print(f"   📊 Size: {line_count} lines (split threshold: {split_threshold})", file=sys.stderr)
+        print(f"", file=sys.stderr)
+        print(f"   💡 This file may exceed LLM context limits.", file=sys.stderr)
+        print(f"      Large markdown files are difficult to navigate and process.", file=sys.stderr)
+        print(f"", file=sys.stderr)
+        print(f"   ✨ I can split this into manageable sections:", file=sys.stderr)
+        print(f"      • Create index file (00-{Path(file_path).stem}.md)", file=sys.stderr)
+        print(f"      • Split into logical sections with navigation", file=sys.stderr)
+        print(f"      • Preserve all content and formatting", file=sys.stderr)
+        print(f"      • Backup original file", file=sys.stderr)
+        print(f"", file=sys.stderr)
+        print(f"   🤖 Would you like me to split this file?", file=sys.stderr)
+        print(f"      Reply 'yes' and I'll launch the markdown-splitter agent", file=sys.stderr)
+        print(f"", file=sys.stderr)
+        print(f"   🔧 Manual split: /guard:split-markdown {file_path}", file=sys.stderr)
+        print(f"   ⚙️  Adjust threshold: Edit markdown_splitter.auto_suggest_threshold in quality_config.json", file=sys.stderr)
+        print(f"", file=sys.stderr)
+
+        # Don't block - just warn and allow
+        # User can respond to the suggestion
+        sys.exit(0)
     
     if should_block:
         path = Path(file_path)

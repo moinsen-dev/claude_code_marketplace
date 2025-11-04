@@ -1,7 +1,7 @@
 {
-  "name": "file-guardian",
-  "version": "1.1.0",
-  "description": "Protect sensitive files from accidental edits and prevent unnecessary markdown summaries with configurable blacklists",
+  "name": "guard",
+  "version": "2.0.0",
+  "description": "Unified guardian that protects sensitive files, prevents bloated code, and enforces architectural best practices",
   "author": {
     "name": "Ulrich Diedrichsen",
     "email": "[email protected]"
@@ -12,8 +12,11 @@
   "keywords": [
     "security",
     "file-protection",
-    "blacklist",
-    "safety",
-    "automation"
+    "code-quality",
+    "refactoring",
+    "architecture",
+    "best-practices",
+    "automation",
+    "guardian"
   ]
 }

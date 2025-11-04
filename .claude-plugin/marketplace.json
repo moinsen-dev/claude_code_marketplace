@@ -1,14 +1,13 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "moinsen-claude-code-marketplace",
-  "version": "1.4.0",
+  "name": "moinsen-coder",
+  "version": "2.0.0",
   "owner": {
     "name": "Ulrich Diedrichsen",
     "url": "https://github.com/moinsen-dev"
   },
   "metadata": {
     "description": "Custom Claude Code plugin marketplace with specialized tools and workflows",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "homepage": "https://github.com/moinsen-dev/claude_code_marketplace"
   },
   "plugins": [
@@ -25,10 +24,10 @@
       "category": "development"
     },
     {
-      "name": "file-guardian",
-      "source": "./plugins/file-guardian",
-      "description": "Protect sensitive files from accidental edits and prevent unnecessary markdown summaries with configurable blacklists",
-      "version": "1.1.0",
+      "name": "guard",
+      "source": "./plugins/guard",
+      "description": "Unified guardian that protects sensitive files, prevents bloated code, and enforces architectural best practices",
+      "version": "2.0.0",
       "author": {
         "name": "Ulrich Diedrichsen",
         "email": "[email protected]"
@@ -36,28 +35,12 @@
       "keywords": [
         "security",
         "file-protection",
-        "blacklist",
-        "safety",
-        "automation"
-      ],
-      "category": "security"
-    },
-    {
-      "name": "code-quality-guardian",
-      "source": "./plugins/code-quality-guardian",
-      "description": "Prevent bloated files and incomplete code by detecting oversized files and TODO comments, suggesting refactoring and complete implementations",
-      "version": "1.1.0",
-      "author": {
-        "name": "Ulrich Diedrichsen",
-        "email": "[email protected]"
-      },
-      "keywords": [
         "code-quality",
         "refactoring",
         "architecture",
         "best-practices",
-        "file-size",
-        "domain-driven-design"
+        "automation",
+        "guardian"
       ],
       "category": "quality"
     }

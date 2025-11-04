@@ -45,10 +45,24 @@ SUMMARY_CONTENT_PATTERNS = [
     r'(?i)changes made:',
 ]
 
+def is_guardian_enabled(project_root: Path, guardian_name: str) -> bool:
+    """Check if a specific guardian is enabled in overrides."""
+    overrides_file = project_root / '.claude' / 'guard' / 'overrides.json'
+
+    if not overrides_file.exists():
+        return True  # Default: enabled
+
+    try:
+        with open(overrides_file) as f:
+            overrides = json.load(f)
+            return overrides.get(guardian_name, True)
+    except:
+        return True  # On error, assume enabled
+
 def load_config(project_root: Path) -> dict:
     """Load markdown validation config."""
-    config_file = project_root / '.claude' / 'file_guardian_config.json'
-    
+    config_file = project_root / '.claude' / 'guard' / 'file_guardian_config.json'
+
     default_config = {
         "block_unsolicited_markdown": True,
         "allow_patterns": [],  # Patterns to always allow
@@ -135,8 +149,13 @@ def main():
     
     # Get project root and load config
     project_root = Path(os.getenv('CLAUDE_PROJECT_DIR', os.getcwd()))
+
+    # Check if this guardian is enabled
+    if not is_guardian_enabled(project_root, "markdown-control"):
+        sys.exit(0)  # Disabled, allow operation
+
     config = load_config(project_root)
-    
+
     # If markdown blocking is disabled, allow
     if not config.get("block_unsolicited_markdown", True):
         sys.exit(0)
@@ -145,8 +164,8 @@ def main():
     if is_explicitly_allowed(file_path, config):
         sys.exit(0)  # Allowed by config
     
-    # Get content
-    content = tool_input.get('file_text', '')
+    # Get content (Write tool uses 'content' parameter)
+    content = tool_input.get('content', '')
     
     # Check filename
     is_suspicious_name = is_summary_filename(path.name)

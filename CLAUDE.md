@@ -4,11 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Claude Code plugin marketplace** that provides specialized tools, agents, and workflows for development. The marketplace contains three main plugins:
+This is a **Claude Code plugin marketplace** that provides specialized tools, agents, and workflows for development. The marketplace contains two main plugins:
 
 1. **dev-tools**: Essential development utilities (code review, refactoring, debugging, social media generation)
-2. **file-guardian**: Protection system preventing accidental edits to sensitive files and blocking unsolicited markdown summaries
-3. **code-quality-guardian**: Architectural advisor that prevents bloated files and incomplete code (TODOs)
+2. **guard**: Unified guardian that protects sensitive files, enforces code quality, controls package management, and provides granular enable/disable controls
 
 ## Architecture
 
@@ -30,15 +29,17 @@ plugins/<plugin-name>/
 
 ### Hook System Architecture
 
-The guardian plugins use Claude Code's **PreToolUse hooks** to intercept file operations before they execute:
+The **guard** plugin uses Claude Code's **PreToolUse hooks** to intercept file operations before they execute:
 
-**file-guardian hooks:**
-- Intercepts `Edit|Write|MultiEdit` → validates against `.claude/forbidden_paths.txt` blacklist
+**Guard hooks:**
+- Intercepts `Edit|Write|MultiEdit` → validates against `.claude/guard/forbidden_paths.txt` blacklist
 - Intercepts `Write` → validates markdown files against unsolicited summary patterns
+- Intercepts `Write|Edit|MultiEdit` → validates file size against `.claude/guard/quality_config.json` thresholds
+- Intercepts `Write|Edit|MultiEdit` → warns about package manifest direct edits
+- Intercepts `Bash` → enforces tool usage (e.g., pnpm over npm)
+- Intercepts `Read|Write|Edit|MultiEdit` → protects generated files
 
-**code-quality-guardian hooks:**
-- Intercepts `Write|Edit|MultiEdit` → validates file size against `.claude/quality_config.json` thresholds
-- Checks for TODO/FIXME/HACK comments if `block_todos: true`
+Each hook checks `.claude/guard/overrides.json` to see if the guardian is enabled before running.
 
 Hook scripts are Python 3.11+ using inline script metadata (PEP 723).
 
@@ -57,24 +58,23 @@ The `.claude-plugin/marketplace.json` file registers plugins with Claude Code:
 # Add marketplace to Claude Code
 /plugin marketplace add /path/to/claude_code_marketplace
 
-# Install a specific plugin for testing
+# Install plugins for testing
 /plugin install dev-tools@claude-code-marketplace
-/plugin install file-guardian@claude-code-marketplace
-/plugin install code-quality-guardian@claude-code-marketplace
+/plugin install guard@claude-code-marketplace
 ```
 
 ### Plugin Commands
 
-**file-guardian:**
+**guard:**
 ```bash
-/protect <pattern>           # Add file/pattern to blacklist
-/unprotect <pattern>         # Remove from blacklist
-/protect list                # View protected files
-```
-
-**code-quality-guardian:**
-```bash
-/quality-config              # View current size thresholds
+/guard:init                         # Initialize guard plugin
+/guard:protect <pattern>            # Add file/pattern to blacklist
+/guard:unprotect <pattern>          # Remove from blacklist
+/guard:config                       # View quality thresholds
+/guard:split-markdown <file>        # Split large markdown files
+/guard:disable <guardian>           # Temporarily disable a guardian
+/guard:enable <guardian>            # Re-enable a guardian
+/guard:status                       # View guardian status
 ```
 
 **dev-tools:**
@@ -87,31 +87,51 @@ The `.claude-plugin/marketplace.json` file registers plugins with Claude Code:
 
 ## Important Constraints
 
-### File Protection (file-guardian)
+### Guard Plugin
 
-The **file-guardian** plugin actively blocks edits to:
-- Sensitive files (`.env`, credentials, keys)
-- Lock files (`package-lock.json`, `pubspec.lock`)
-- Build artifacts (`node_modules/`, `build/`, `dist/`)
-- Git internals (`.git/`)
+The **guard** plugin provides multiple protection mechanisms:
 
-It also **blocks unsolicited markdown files** that look like summaries (SUMMARY.md, RECAP.md, CHANGES.md) unless explicitly requested.
+**File Protection:**
+- Blocks edits to sensitive files (`.env`, credentials, keys)
+- Blocks edits to lock files (`package-lock.json`, `pubspec.lock`)
+- Blocks edits to build artifacts (`node_modules/`, `build/`, `dist/`)
+- Blocks edits to git internals (`.git/`)
+- Blocks unsolicited markdown summaries (SUMMARY.md, RECAP.md)
 
-### Code Quality Enforcement (code-quality-guardian)
+**Code Quality:**
+- Blocks files exceeding line thresholds (800 for .dart/.py/.ts/.js, 600 for .tsx/.jsx/.vue)
+- Blocks TODO/FIXME/HACK/XXX/TEMP/TMP comments (when `block_todos: true`)
+- Suggests splitting large markdown files (>2000 lines)
 
-The **code-quality-guardian** plugin blocks files that:
-- Exceed line count thresholds (800 lines for .dart/.py/.ts/.js, 600 for .tsx/.jsx/.vue)
-- Contain TODO/FIXME/HACK/XXX/TEMP/TMP comments (when `block_todos: true`)
+**Generated Files:**
+- Warns when reading generated files (*.g.dart, localization, etc.)
+- Blocks edits to generated files, redirects to source files
+
+**Package Management:**
+- Warns when editing package manifests directly (package.json, pubspec.yaml, etc.)
+- Suggests using package manager commands instead
+
+**Tool Usage:**
+- Enforces preferred package managers (e.g., pnpm over npm, uv over pip)
+- Configurable per project
+
+**Temporary Disabling:**
+- Use `/guard:disable <guardian>` to temporarily disable a specific guardian
+- Use `/guard:enable <guardian>` to re-enable
+- Use `/guard:status` to view current state
 
 **When blocked**, suggest breaking files into smaller modules following domain-driven design principles.
 
 ## Configuration Files
 
-User-configurable files in `.claude/` directory:
+User-configurable files in `.claude/guard/` directory:
 
 - **forbidden_paths.txt**: File patterns to protect (one per line, supports globs)
 - **file_guardian_config.json**: Markdown blocking settings
-- **quality_config.json**: File size thresholds and TODO blocking settings
+- **quality_config.json**: File size thresholds, TODO blocking, generated files, tool/package guardian settings
+- **overrides.json**: Guardian enable/disable state (persists across sessions)
+
+Hooks are stored at `.claude/hooks.json` for compatibility with other plugins.
 
 ## Development Workflow
 
